@@ -16,6 +16,7 @@
  */
 package org.apache.drillui.test.framework.testng.unsecure.query;
 
+import org.apache.drillui.test.framework.steps.webui.BaseSteps;
 import org.apache.drillui.test.framework.testng.unsecure.BaseUnsecureTest;
 import org.testng.annotations.Test;
 import org.apache.drillui.test.framework.steps.webui.QueryResultsSteps;
@@ -26,12 +27,16 @@ import java.util.Arrays;
 import static org.testng.Assert.assertEquals;
 
 public class ResultsTableTest extends BaseUnsecureTest {
+
+  private final QuerySteps querySteps = BaseSteps.getSteps(QuerySteps.class);
+  private final QueryResultsSteps queryResultsSteps = BaseSteps.getSteps(QueryResultsSteps.class);
+
   @Test(groups = {"functional"})
   public void debugTest() {
-    QuerySteps.runQuery("SELECT * FROM cp.`employee.json` LIMIT 9");
+    querySteps.runSQL("SELECT * FROM cp.`employee.json` LIMIT 9");
     assertEquals(QueryResultsSteps.rowsCount(), 9);
     assertEquals(QueryResultsSteps.columnsCount(), 16);
-    assertEquals(QueryResultsSteps.getRow(0), Arrays.asList("1", "Sheri Nowmer", "Sheri", "Nowmer", "1", "President", "0", "1", "1961-08-26", "1994-12-01 00:00:00.0", "80000.0", "0", "Graduate Degree", "S", "F", "Senior Management"));
+    assertEquals(queryResultsSteps.getRow(0), Arrays.asList("1", "Sheri Nowmer", "Sheri", "Nowmer", "1", "President", "0", "1", "1961-08-26", "1994-12-01 00:00:00.0", "80000.0", "0", "Graduate Degree", "S", "F", "Senior Management"));
   }
 
 }

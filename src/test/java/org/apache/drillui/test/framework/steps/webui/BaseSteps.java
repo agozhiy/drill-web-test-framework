@@ -19,12 +19,31 @@ package org.apache.drillui.test.framework.steps.webui;
 import org.apache.drillui.test.framework.initial.TestProperties;
 import org.apache.drillui.test.framework.initial.WebBrowser;
 import org.apache.drillui.test.framework.pages.BasePage;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public final class BaseSteps {
+import java.util.HashMap;
+import java.util.Map;
 
-  private BaseSteps() {
+public class BaseSteps {
+
+  private static Map<Class<? extends BaseSteps>, BaseSteps> steps;
+
+  public static <T extends BaseSteps> T getSteps(Class<T> stepsClass) {
+
+    if (steps == null) {
+      steps = new HashMap<>();
+    }
+
+    if (!steps.containsKey(stepsClass)) {
+      try {
+        steps.put(stepsClass, stepsClass.newInstance());
+      } catch (InstantiationException | IllegalAccessException e) {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+      }
+    }
+
+    return stepsClass.cast(steps.get(stepsClass));
   }
 
   public static void setImplicitWait(int seconds) {

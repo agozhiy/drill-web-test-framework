@@ -28,6 +28,9 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class ErrorTest extends BaseUnsecureTest {
+
+  private QuerySteps querySteps = BaseSteps.getSteps(QuerySteps.class);
+
   @Test(groups = {"functional"})
   public void queryWithError() {
     BaseSteps.openUrl("/djmfhhgkdjs");
@@ -49,7 +52,7 @@ public class ErrorTest extends BaseUnsecureTest {
 
   @Test(groups = {"functional"})
   public void queryWithoutError() {
-    QuerySteps.runQuery("SELECT * FROM cp.`employee.json` LIMIT 9");
+    querySteps.runSQL("SELECT * FROM cp.`employee.json` LIMIT 9");
     assertTrue(ErrorSteps.getFullStackTrace().isEmpty());
   }
 

@@ -21,6 +21,8 @@ import org.openqa.selenium.support.FindBy;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class QueryResultsPage extends BasePage {
   @FindBy(xpath = "//*[@id=\"result\"]/tbody/tr/td")
@@ -65,7 +67,18 @@ public class QueryResultsPage extends BasePage {
   }
 
   public String getQueryProfile() {
-    return profileButton.getText().split(": ")[1];
+    String result = profileButton.getText();
+    /*
+      Example:
+      Button text - "Query Profile: 2393e37c-0cc6-f39a-3df1-aae892ab106c COMPLETED"
+      The Pattern should return "2393e37c-0cc6-f39a-3df1-aae892ab106c"
+     */
+    Matcher matcher = Pattern.compile(":\\s+([\\w-]+)")
+        .matcher(result);
+    if (matcher.find()) {
+      result = matcher.group(1);
+    }
+    return result;
   }
 
   public String getFirstResultCell() {

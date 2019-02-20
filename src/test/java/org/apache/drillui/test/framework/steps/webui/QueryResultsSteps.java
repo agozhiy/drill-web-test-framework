@@ -21,13 +21,10 @@ import org.apache.drillui.test.framework.pages.QueryResultsPage;
 
 import java.util.List;
 
-public final class QueryResultsSteps {
+public final class QueryResultsSteps extends BaseSteps {
 
   private static QueryResultsPage getPage() {
     return BasePage.getPage(QueryResultsPage.class);
-  }
-
-  private QueryResultsSteps() {
   }
 
   public static int rowsCount() {
@@ -42,13 +39,13 @@ public final class QueryResultsSteps {
         .size();
   }
 
-  public static List getRow(int rowId) {
+  public List<String> getRow(int rowId) {
     return getPage()
         .getResultsTableBody()
         .get(rowId);
   }
 
-  public static String getQueryProfile() {
+  public String getQueryProfile() {
     return getPage().getQueryProfile();
   }
 }

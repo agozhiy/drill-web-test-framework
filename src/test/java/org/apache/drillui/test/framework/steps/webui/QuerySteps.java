@@ -18,16 +18,40 @@ package org.apache.drillui.test.framework.steps.webui;
 
 import org.apache.drillui.test.framework.pages.BasePage;
 import org.apache.drillui.test.framework.pages.NavigationPage;
-import org.apache.drillui.test.framework.pages.QueryResultsPage;
+import org.apache.drillui.test.framework.pages.QueryPage;
+import org.apache.drillui.test.framework.pages.QueryPage.QueryType;
 
-public final class QuerySteps {
+public final class QuerySteps extends BaseSteps {
 
-  private QuerySteps() {
+  public QueryResultsSteps runSQL(String queryText) {
+    BasePage.getPage(NavigationPage.class)
+        .navigateQuery()
+        .setQueryType(QueryType.SQL)
+        .submitQuery(queryText);
+    return BaseSteps.getSteps(QueryResultsSteps.class);
   }
 
-  public static QueryResultsPage runQuery(String queryText) {
-    return BasePage.getPage(NavigationPage.class)
+  public QueryResultsSteps runPhysical(String queryText) {
+    BasePage.getPage(NavigationPage.class)
         .navigateQuery()
+        .setQueryType(QueryType.PHYSICAL)
         .submitQuery(queryText);
+    return BaseSteps.getSteps(QueryResultsSteps.class);
+  }
+
+  public QueryResultsSteps runLogical(String queryText) {
+    BasePage.getPage(NavigationPage.class)
+        .navigateQuery()
+        .setQueryType(QueryType.LOGICAL)
+        .submitQuery(queryText);
+    return BaseSteps.getSteps(QueryResultsSteps.class);
+  }
+
+  public QueryResultsSteps explainPlanForQuery(String queryText) {
+    return runSQL("explain plan for " + queryText);
+  }
+
+  public QueryResultsSteps explainPlanLogicalForQuery(String queryText) {
+    return runSQL("explain plan without implementation for " + queryText);
   }
 }

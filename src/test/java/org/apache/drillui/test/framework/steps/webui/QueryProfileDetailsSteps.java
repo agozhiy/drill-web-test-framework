@@ -20,34 +20,71 @@ package org.apache.drillui.test.framework.steps.webui;
 
 import org.apache.drillui.test.framework.pages.BasePage;
 import org.apache.drillui.test.framework.pages.QueryProfileDetailsPage;
+import org.apache.drillui.test.framework.pages.QueryProfileDetailsPage.QueryType;
 
-public class QueryProfileDetailsSteps {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-  public static void openProfile(String queryProfile) {
+public class QueryProfileDetailsSteps extends BaseSteps {
+
+  public QueryProfileDetailsSteps openProfile(String queryProfile) {
     BaseSteps.openUrl("/profiles/" + queryProfile);
+    return this;
   }
 
-  public static void validatePage() {
+  public void validatePage() {
 
   }
 
-  public static QueryProfileDetailsPage navigateQueryTab() {
-    return getPage().navigateTab("Query");
+  public QueryProfileDetailsSteps navigateTab(String tabText) {
+    getPage().navigateTab(tabText);
+    return this;
   }
 
-  public static String activeTab() {
-    return getPage().activeQuery();
+  public String activeTab() {
+    return getPage().activeTab();
   }
 
-  public static String getQueryText() {
-    return getPage().getQueryText();
+  public String activePanel() {
+    return getPage().activePanelId();
   }
 
-  public static void setQueryText(String text) {
+  public String getQueryText() {
+    return getPage().waitForEditorText()
+        .getQueryText();
+  }
+
+  public QueryProfileDetailsSteps setQueryText(String text) {
     getPage().setQueryText(text);
+    return this;
   }
 
-  private static QueryProfileDetailsPage getPage() {
+  public QueryResultsSteps rerunSQL() {
+    getPage().setQueryType(QueryType.SQL)
+        .rerunQuery();
+    return BaseSteps.getSteps(QueryResultsSteps.class);
+  }
+
+  public QueryResultsSteps rerunPhysical() {
+    getPage().setQueryType(QueryType.PHYSICAL)
+        .rerunQuery();
+    return BaseSteps.getSteps(QueryResultsSteps.class);
+  }
+
+  public QueryResultsSteps rerunLogical() {
+    getPage().setQueryType(QueryType.LOGICAL)
+        .rerunQuery();
+    return BaseSteps.getSteps(QueryResultsSteps.class);
+  }
+
+  public boolean validatePlan(String pattern) {
+    String plan = getPage().getPlan();
+    Matcher matcher = Pattern.compile(pattern, Pattern.DOTALL | Pattern.MULTILINE)
+        .matcher(plan);
+    return matcher.find();
+  }
+
+  private QueryProfileDetailsPage getPage() {
     return BasePage.getPage(QueryProfileDetailsPage.class);
   }
 }

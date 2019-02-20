@@ -29,8 +29,32 @@ public class QueryProfileDetailsPage extends BasePage{
   @FindBy(id = "query-tabs")
   private WebElement tabs;
 
-  @FindBy(id = "query-text")
-  private WebElement queryText;
+  @FindBy(id = "query-content")
+  private WebElement panels;
+
+  @FindBy(id = "sql")
+  private WebElement radioSQL;
+
+  @FindBy(id = "physical")
+  private WebElement radioPhysical;
+
+  @FindBy(id = "logical")
+  private WebElement radioLogical;
+
+  @FindBy(xpath = "//button[contains(text(), 'Re-run query')]")
+  private WebElement rerunButton;
+
+  private WebElement activePanel() {
+    return panels.findElement(By.cssSelector(".active"));
+  }
+
+  private WebElement queryTextArea() {
+    return activePanel().findElement(By.className("ace_text-input"));
+  }
+
+  private WebElement queryContent() {
+    return activePanel().findElement(By.className("ace_content"));
+  }
 
   public QueryProfileDetailsPage navigateTab(String tabText) {
     tabs.findElement(By.linkText(tabText))
@@ -38,29 +62,59 @@ public class QueryProfileDetailsPage extends BasePage{
     return this;
   }
 
-  public String activeQuery() {
+  public String activeTab() {
     return tabs.findElement(By.className("active"))
         .getText();
   }
 
+  public String activePanelId() {
+    // Cannot use By.className due to a space in the class name.
+    return activePanel().getAttribute("id");
+  }
+
   public String getQueryText() {
-    waitForEditorText(queryText);
-    return getEditorText(queryText);
+    return queryContent().getText();
   }
 
-  public void setQueryText(String text) {
-    waitForEditorText(queryText);
+  public String getPlan() {
+    return activePanel().getText();
   }
 
-  private void waitForEditorText(WebElement editor) {
-    if (getEditorText(editor).equals("")) {
+  public QueryProfileDetailsPage setQueryText(String text) {
+    sendText(queryTextArea(), text);
+    return this;
+  }
+
+  public QueryProfileDetailsPage waitForEditorText() {
+    if (getQueryText().equals("")) {
       new WebDriverWait(getDriver(), TestProperties.getInt("DEFAULT_TIMEOUT"))
-          .until(driver -> !getEditorText(editor).equals(""));
+          .until(driver -> !getQueryText().equals(""));
     }
+    return this;
   }
 
-  private String getEditorText(WebElement editor) {
-    return editor.findElement(By.className("ace_content"))
-        .getText();
+  public QueryProfileDetailsPage setQueryType(QueryType queryType) {
+    switch (queryType) {
+      case SQL:
+        radioSQL.click();
+        break;
+      case PHYSICAL:
+        radioPhysical.click();
+        break;
+      case LOGICAL:
+        radioLogical.click();
+        break;
+    }
+    return this;
+  }
+
+  public void rerunQuery() {
+    rerunButton.click();
+  }
+
+  public enum QueryType {
+    SQL,
+    PHYSICAL,
+    LOGICAL
   }
 }

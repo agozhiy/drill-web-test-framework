@@ -54,9 +54,29 @@ public class QueryPage extends BasePage {
   }
 
   public QueryResultsPage submitQuery(String queryText) {
-    queryInputField.sendKeys(queryText);
+    sendText(queryInputField, queryText);
     submitButton.click();
     return getPage(QueryResultsPage.class);
   }
 
+  public QueryPage setQueryType(QueryType queryType) {
+    switch (queryType) {
+      case SQL:
+        queryTypeSQLRButton.click();
+        break;
+      case PHYSICAL:
+        queryTypePHYSICALRButton.click();
+        break;
+      case LOGICAL:
+        queryTypeLOGICALRButton.click();
+        break;
+    }
+    return this;
+  }
+
+  public enum QueryType {
+    SQL,
+    PHYSICAL,
+    LOGICAL
+  }
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.drillui.test.framework.testng.unsecure.query;
 
+import org.apache.drillui.test.framework.steps.webui.BaseSteps;
 import org.apache.drillui.test.framework.steps.webui.QueryExceptionsSteps;
 import org.testng.annotations.Test;
 import org.apache.drillui.test.framework.steps.webui.QuerySteps;
@@ -25,16 +26,19 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
 public class ResultsExceptionsTest extends BaseUnsecureTest {
+
+  private QuerySteps querySteps = BaseSteps.getSteps(QuerySteps.class);
+
   @Test(groups = {"functional"})
   public void queryWithException() {
-    QuerySteps.runQuery("ELECT * FROM cp.`employee.json` LIMIT 9");
+    querySteps.runSQL("ELECT * FROM cp.`employee.json` LIMIT 9");
     assertTrue(QueryExceptionsSteps.hasException());
     assertTrue(QueryExceptionsSteps.getFullStackTrace().startsWith("Query Failed: An Error Occurred"));
   }
 
   @Test(groups = {"functional"})
   public void queryWithoutException() {
-    QuerySteps.runQuery("SELECT * FROM cp.`employee.json` LIMIT 9");
+    querySteps.runSQL("SELECT * FROM cp.`employee.json` LIMIT 9");
     assertFalse(QueryExceptionsSteps.hasException());
   }
 

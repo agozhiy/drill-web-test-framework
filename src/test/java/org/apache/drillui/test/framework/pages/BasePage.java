@@ -17,9 +17,13 @@
 package org.apache.drillui.test.framework.pages;
 
 import org.apache.drillui.test.framework.initial.WebBrowser;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +60,13 @@ public abstract class BasePage {
 
   protected static WebDriver getDriver() {
     return WebBrowser.getDriver();
+  }
+
+  protected static void sendText(WebElement element, String text) {
+    Toolkit.getDefaultToolkit().getSystemClipboard()
+        .setContents(new StringSelection(text), null);
+    element.sendKeys(Keys.chord(Keys.CONTROL, "a"),
+        Keys.chord(Keys.CONTROL, "v"));
   }
 
 }
