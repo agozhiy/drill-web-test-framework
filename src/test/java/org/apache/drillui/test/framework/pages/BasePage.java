@@ -65,8 +65,8 @@ public abstract class BasePage {
   protected static void sendText(WebElement element, String text) {
     Toolkit.getDefaultToolkit().getSystemClipboard()
         .setContents(new StringSelection(text), null);
-    element.sendKeys(Keys.chord(Keys.CONTROL, "a"),
-        Keys.chord(Keys.CONTROL, "v"));
+    element.sendKeys(Keys.CONTROL, "a");
+    element.sendKeys(Keys.CONTROL, "v");
   }
 
 }

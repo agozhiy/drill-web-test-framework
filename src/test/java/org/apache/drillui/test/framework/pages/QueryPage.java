@@ -55,7 +55,7 @@ public class QueryPage extends BasePage {
 
   public QueryResultsPage submitQuery(String queryText) {
     sendText(queryInputField, queryText);
-    submitButton.click();
+    submitButton.submit();
     return getPage(QueryResultsPage.class);
   }
 

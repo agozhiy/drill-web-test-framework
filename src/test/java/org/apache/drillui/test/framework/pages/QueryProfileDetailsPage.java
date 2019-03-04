@@ -24,6 +24,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 public class QueryProfileDetailsPage extends BasePage{
 
   @FindBy(id = "query-tabs")
@@ -43,6 +50,12 @@ public class QueryProfileDetailsPage extends BasePage{
 
   @FindBy(xpath = "//button[contains(text(), 'Re-run query')]")
   private WebElement rerunButton;
+
+  @FindBy(id = "query-visual-canvas")
+  private WebElement printedNodes;
+
+  @FindBy(xpath = "//button[contains(text(), 'Print Plan')]")
+  private WebElement printPlan;
 
   private WebElement activePanel() {
     return panels.findElement(By.cssSelector(".active"));
@@ -65,6 +78,31 @@ public class QueryProfileDetailsPage extends BasePage{
   public String activeTab() {
     return tabs.findElement(By.className("active"))
         .getText();
+  }
+
+  public List<Map<String, String>> getPlanNodes() {
+    return getPlanNodes(activePanel());
+  }
+
+  public List<Map<String, String>> getPrintedPlanNodes() {
+    return getPlanNodes(printedNodes);
+  }
+
+  private List<Map<String, String>> getPlanNodes(WebElement parentElement) {
+    return parentElement.findElements(By.cssSelector(".node.enter"))
+        .stream()
+        .map(element -> {
+          Map<String, String> node = new HashMap<>();
+          node.put("label", element.getText());
+          String coordinate = element.getAttribute("transform");
+          Matcher matcher = Pattern.compile(",(\\d+)\\)")
+              .matcher(coordinate);
+          if (matcher.find()) {
+            coordinate = matcher.group(1);
+          }
+          node.put("coordinate", coordinate);
+          return node;
+    }).collect(Collectors.toList());
   }
 
   public String activePanelId() {
@@ -109,7 +147,13 @@ public class QueryProfileDetailsPage extends BasePage{
   }
 
   public void rerunQuery() {
-    rerunButton.click();
+    rerunButton.submit();
+  }
+
+  public Thread printPlan() {
+    Thread t = new Thread( () -> printPlan.click());
+    t.start();
+    return t;
   }
 
   public enum QueryType {

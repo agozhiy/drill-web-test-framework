@@ -21,14 +21,18 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 public abstract class WebBrowser {
 
   private static WebDriver driver;
+
+  private static LinkedList<String> parentWindows = new LinkedList<>();
 
   private static void init() {
     switch (TestProperties.get("DRIVER_TYPE")) {
@@ -104,5 +108,27 @@ public abstract class WebBrowser {
       driver.quit();
       driver = null;
     }
+  }
+
+  public static void switchToOpenedWindow() {
+    parentWindows.push(driver.getWindowHandle());
+    for (String window : driver.getWindowHandles()) {
+      if (!window.equals(parentWindows.getLast())) {
+        driver.switchTo().window(window);
+        break;
+      }
+    }
+  }
+
+  public static void closeWindow() {
+    driver.close();
+    if (parentWindows.size() != 0) {
+      driver.switchTo().window(parentWindows.pop());
+    }
+  }
+
+  public static void waitForWindowOpening(int numberOfOpenWindows) {
+    new WebDriverWait(driver, TestProperties.getInt("DEFAULT_TIMEOUT"))
+        .until(driver -> driver.getWindowHandles().size() != numberOfOpenWindows);
   }
 }

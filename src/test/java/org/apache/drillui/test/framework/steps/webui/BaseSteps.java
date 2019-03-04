@@ -19,8 +19,12 @@ package org.apache.drillui.test.framework.steps.webui;
 import org.apache.drillui.test.framework.initial.TestProperties;
 import org.apache.drillui.test.framework.initial.WebBrowser;
 import org.apache.drillui.test.framework.pages.BasePage;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,5 +75,16 @@ public class BaseSteps {
 
   public static String getURL() {
     return WebBrowser.getURL();
+  }
+
+  protected static void pressEsc() {
+    Robot robot;
+    try {
+      robot = new Robot();
+    } catch (AWTException e) {
+      throw new RuntimeException(e);
+    }
+    robot.keyPress(KeyEvent.VK_ESCAPE);
+    robot.keyRelease(KeyEvent.VK_ESCAPE);
   }
 }

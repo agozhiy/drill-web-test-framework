@@ -154,4 +154,65 @@ public class ProfileDetailsTest extends BaseUnsecureTest {
             "Limit.*" +
             "Scan"));
   }
+
+  @Test
+  public void verifyVisualPlan() {
+    QueryProfileDetailsSteps.VisualPlan expectedPlan = queryProfileDetailsSteps.new VisualPlan();
+    expectedPlan
+        .append("Screen 00-00")
+        .append("Project 00-01")
+        .append("SelectionVectorRemover 00-02")
+        .append("Limit 00-03")
+        .append("Scan 00-04");
+    assertEquals(expectedPlan, queryProfileDetailsSteps.navigateTab("Visualized Plan")
+        .getVisualPlan());
+  }
+
+  @Test
+  public void verifyComplexVisualPlan() {
+    QueryProfileDetailsSteps.VisualPlan expectedPlan = queryProfileDetailsSteps.new VisualPlan();
+    expectedPlan
+        .append("Screen 00-00")
+        .append("Project 00-01")
+        .append("SelectionVectorRemover 00-02")
+        .append("Limit 00-03")
+        .append("Limit 00-04")
+        .append("HashJoin 00-05")
+        .append("Project 00-06")
+        .append("Scan 00-08");
+    expectedPlan.getNode("HashJoin 00-05")
+        .append("Scan 00-07");
+    String complexSQL = "select t1.n_nationkey from cp.`tpch/nation.parquet` t1 join cp.`tpch/nation.parquet` t2 on t1.n_nationkey = t2.n_nationkey limit 5";
+    String complexPlanProfile = querySteps.runSQL(complexSQL)
+        .getQueryProfile();
+    QueryProfileDetailsSteps.VisualPlan actualPlan = queryProfileDetailsSteps.openProfile(complexPlanProfile)
+        .navigateTab("Visualized Plan")
+        .getVisualPlan();
+    assertEquals(expectedPlan, actualPlan);
+  }
+
+  @Test
+  public void verifyPrintPlan() {
+    String complexSQL = "select t1.n_nationkey from cp.`tpch/nation.parquet` t1 join cp.`tpch/nation.parquet` t2 on t1.n_nationkey = t2.n_nationkey limit 5";
+    String complexPlanProfile = querySteps.runSQL(complexSQL)
+        .getQueryProfile();
+    QueryProfileDetailsSteps.VisualPlan expectedPlan = queryProfileDetailsSteps.new VisualPlan();
+    expectedPlan
+        .append("Screen 00-00")
+        .append("Project 00-01")
+        .append("SelectionVectorRemover 00-02")
+        .append("Limit 00-03")
+        .append("Limit 00-04")
+        .append("HashJoin 00-05")
+        .append("Project 00-06")
+        .append("Scan 00-08");
+    expectedPlan.getNode("HashJoin 00-05")
+        .append("Scan 00-07");
+    QueryProfileDetailsSteps.VisualPlan actualPlan = queryProfileDetailsSteps.openProfile(complexPlanProfile)
+        .navigateTab("Visualized Plan")
+        .printPlan()
+        .getPrintingPlan();
+    queryProfileDetailsSteps.closePrintWindow();
+    assertEquals(expectedPlan, actualPlan);
+  }
 }
