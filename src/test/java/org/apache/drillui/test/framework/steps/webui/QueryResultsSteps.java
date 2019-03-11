@@ -28,20 +28,17 @@ public final class QueryResultsSteps extends BaseSteps {
   }
 
   public static int rowsCount() {
-    return getPage()
-        .getResultsTableBody()
+    return getPage().getResultsTable()
         .size();
   }
 
   public static int columnsCount() {
-    return getPage()
-        .getResultsTableHeader()
+    return getPage().getResultsTableHeader()
         .size();
   }
 
   public List<String> getRow(int rowId) {
-    return getPage()
-        .getResultsTableBody()
+    return getPage().getResultsTable()
         .get(rowId);
   }
 

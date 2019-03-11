@@ -16,54 +16,49 @@
  */
 package org.apache.drillui.test.framework.pages;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class QueryResultsPage extends BasePage {
   @FindBy(xpath = "//*[@id=\"result\"]/tbody/tr/td")
   private WebElement queryResultLine;
 
-  @FindBy(xpath = "//*[@id=\"result_wrapper\"]/div[2]/div[1]/div/table/thead")
-  private WebElement queryResultTableHeader;
-
-  @FindBy(xpath = "//*[@id=\"result\"]/tbody")
-  private WebElement queryResultTableBody;
+  @FindBy(id = "result")
+  private WebElement queryResultTable;
 
   @FindBy(xpath = "//*[@title=\"Open in new window\"]")
   private WebElement profileButton;
 
   public List<String> getResultsTableHeader() {
-    List<String> resultsTableHead = new LinkedList<>();
-    for (String column : queryResultTableHeader.getAttribute("outerHTML").split("<th")) {
-      if (!column.contains("</th>")) {
-        continue;
-      }
-      resultsTableHead.add(column.
-          replaceAll("<span .*", "").
-          replaceAll(".*class=\"DataTables_sort_wrapper\">", "").
-          replaceAll("</thead>", "").trim());
-    }
-    return resultsTableHead;
+    return Jsoup.parse(queryResultTable.getAttribute("outerHTML"))
+        .select("thead")
+        .select("tr")
+        .select("th")
+        .stream()
+        .map(Element::text)
+        .collect(Collectors.toList());
   }
 
-  public List<List<String>> getResultsTableBody() {
-    List<List<String>> resultsTable = new LinkedList<>();
-    for (String row : queryResultTableBody.getAttribute("outerHTML").split("<tr")) {
-      if (!row.contains("</tr>")) {
-        continue;
-      }
-      List<String> columns = new LinkedList<>();
-      for (String column : row.replaceAll("</tr>.*", "").trim().split("</td>")) {
-        columns.add(column.replaceAll(".*>", "").trim());
-      }
-      resultsTable.add(columns);
-    }
-    return resultsTable;
+  public List<List<String>> getResultsTable() {
+    return Jsoup.parse(queryResultTable.getAttribute("outerHTML"))
+        .outputSettings(new Document.OutputSettings()
+            .prettyPrint(false))
+        .select("tbody")
+        .select("tr")
+        .stream()
+        .map(row -> row.select("td")
+            .stream()
+            .map(Element::html)
+            .collect(Collectors.toList()))
+        .collect(Collectors.toList());
   }
 
   public String getQueryProfile() {
