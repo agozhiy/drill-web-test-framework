@@ -206,9 +206,9 @@ public class ProfileDetailsTest extends FunctionalTest {
 
   @Test
   public void verifyPrintPlan() {
-    if (PropertiesConst.RUN_ON_SELENOID) {
-      throw new SkipException("These Tests can't be run on Selenoid");
-    }
+//    if (PropertiesConst.RUN_ON_SELENOID) {
+//      throw new SkipException("These Tests can't be run on Selenoid");
+//    }
     String complexSQL = "select t1.n_nationkey from cp.`tpch/nation.parquet` t1 join cp.`tpch/nation.parquet` t2 on t1.n_nationkey = t2.n_nationkey limit 5";
     navigationSteps.navigateQuery();
     String complexPlanProfile = querySteps.runSQL(complexSQL)

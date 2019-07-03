@@ -84,6 +84,7 @@ public class BaseSteps {
     try {
       robot = new Robot();
     } catch (AWTException e) {
+      e.printStackTrace();
       throw new RuntimeException(e);
     }
     robot.keyPress(key);
